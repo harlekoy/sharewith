@@ -1,0 +1,42 @@
+<?php
+
+use Illuminate\Support\Facades\Schema;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Database\Migrations\Migration;
+
+class CreateShareWithTables extends Migration
+{
+    /**
+     * Run the migrations.
+     *
+     * @return void
+     */
+    public function up()
+    {
+        $tableNames = config('sharewith.table_names');
+
+        Schema::create($tableNames['model_has_share_with'], function (Blueprint $table) use ($tableNames) {
+            $table->integer('document_id')->unsigned();
+            $table->morphs('model');
+
+            $table->foreign('document_id')
+                ->references('id')
+                ->on($tableNames['documents'])
+                ->onDelete('cascade');
+
+            $table->primary(['document_id', 'model_id', 'model_type']);
+        });
+    }
+
+    /**
+     * Reverse the migrations.
+     *
+     * @return void
+     */
+    public function down()
+    {
+        $tableNames = config('sharewith.table_names');
+
+        Schema::drop($tableNames['model_has_share_with']);
+    }
+}
